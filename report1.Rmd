@@ -1,0 +1,77 @@
+---
+title: "EDA_NLP"
+author: "joe phaneuf"
+date: "December 16, 2015"
+output: pdf_document
+---
+
+
+de_DE
+en_US
+fi_FI
+ru_RU
+```{r}
+library(tm)
+#library(RWeka)
+enDir <- './final/en_US'
+ec <- Corpus(DirSource(enDir))
+```
+```{r}
+locales <- c('de_DE','en_US','fi_FI','ru_RU')
+types <- c('blogs','news','twitter')
+dataNames <- c()
+filePaths <- c()
+for(l in locales){
+  for(t in types){
+    path <- paste0('final/',l,'/',l,'.',t,'.txt')
+    name <- paste0(l,'.',t)
+    dataNames<-c(dataNames,name)
+    filePaths <- c(filePaths,path)
+  }
+}
+print(dataNames)
+print(filePaths)
+loadDataSet <- function(index){
+  assign(dataNames[index],scan(file=filePaths[index],what='character',sep='\n'),envir=globalenv())
+}
+```
+load english data
+```{r}
+
+```
+basic processing
+```{r}
+
+```
+statistics
+```{r}
+```
+plots
+```{r}
+
+```
+reports
+```{r}
+```
+```{r}
+loadDataSet(4)
+loadDataSet(5)
+loadDataSet(6)
+```
+x[grep('string',x)]#subset x matching 'string'
+hist(sapply(en_US.blogs,function(x) log(nchar(x))))
+
+Got English Dictionary using command 'cat /usr/share/dict/words > englishDictionary.txt'
+
+looking at NLP. Regexp_Tokenizer   and tm.MC_Tokenizer
+NLP.ngrams(x,n) to create bi or trigrams
+use DirSource on directory into Corpus
+docs <- Corpus(DirSource(cname))   
+https://rstudio-pubs-static.s3.amazonaws.com/31867_8236987cf0a8444e962ccd2aec46d9c3.html
+tm_map to apply functions to corpora
+Remove stop words stopwords(kind='en')
+
+
+myTable         <- myTable[ ,.N, by=list(V1)]
+setnames(myTable, 1:2, c("phrase","freq"))
+Assuming that myTable starts out as a data table with a single variable containing all individual occurrences of phrases that interest you (e.g. of length 4 words, say) then those 2 lines will give you myTable containing only unique instances of all phrases with a second variable which is the frequency count for each unique phrase. And it'll do it blazingly fast too.

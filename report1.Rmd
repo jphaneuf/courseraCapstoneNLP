@@ -5,58 +5,44 @@ date: "December 16, 2015"
 output: pdf_document
 ---
 
-
-de_DE
-en_US
-fi_FI
-ru_RU
 ```{r}
 library(tm)
-#library(RWeka)
+library(quanteda)
+#install SnoballC
 enDir <- './final/en_US'
-ec <- Corpus(DirSource(enDir))
-```
-```{r}
-locales <- c('de_DE','en_US','fi_FI','ru_RU')
-types <- c('blogs','news','twitter')
-dataNames <- c()
-filePaths <- c()
-for(l in locales){
-  for(t in types){
-    path <- paste0('final/',l,'/',l,'.',t,'.txt')
-    name <- paste0(l,'.',t)
-    dataNames<-c(dataNames,name)
-    filePaths <- c(filePaths,path)
-  }
-}
-print(dataNames)
-print(filePaths)
-loadDataSet <- function(index){
-  assign(dataNames[index],scan(file=filePaths[index],what='character',sep='\n'),envir=globalenv())
-}
 ```
 load english data
 ```{r}
-
+ec <- VCorpus(DirSource(enDir))
 ```
 basic processing
 ```{r}
-
+options(mc.cores=1) #per stack overflow
+bigramTokenizer <- function(x) {NGramTokenizer(x,Weka_control(min=2,max=2))}
+x<-tm_map(x,bigramTokenizer)
+ec <- tm_map
+#ec <- tm_map(ec,MC_tokenizer)
+#x[[1]]$content
+#ec <- tm_map(ec, content_transformer(tolower))
+#ec <- tm_map(ec, removePunctuation)
+#ec <- tm_map(ec, stripWhitespace)
+#ec <- tm_map(ec, removeWords, stopwords("english"))
 ```
 statistics
 ```{r}
+x<-ec[[3]]$content[1:10]
+x<-VCorpus(VectorSource(x))
+x<-tm_map(x,bigramTokenizer) 
+x <- tm_map(x, PlainTextDocument)#per stack over flow error mitigation
+x<- TermDocumentMatrix(x)
 ```
+
 plots
 ```{r}
 
 ```
 reports
 ```{r}
-```
-```{r}
-loadDataSet(4)
-loadDataSet(5)
-loadDataSet(6)
 ```
 x[grep('string',x)]#subset x matching 'string'
 hist(sapply(en_US.blogs,function(x) log(nchar(x))))

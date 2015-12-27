@@ -1,3 +1,8 @@
+#readlines
+BASH:
+  cat en_US.blogs.txt | awk 'NR >= 0 && NR <= 10 { print }' > en_US.blogs_sub.txt
+cat en_US.news.txt | awk 'NR >= 0 && NR <= 10 { print }' > en_US.news_sub.txt
+
 x[grep('string',x)]#subset x matching 'string'
 hist(sapply(en_US.blogs,function(x) log(nchar(x))))
 

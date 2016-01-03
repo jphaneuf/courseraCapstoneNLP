@@ -1,37 +1,55 @@
 ---
 title: "Coursera/JHU NLP Milestone Report"
-author: "joe phaneuf"
+output: html_document
 date: "December 16, 2015"
-output: pdf_document
 ---
 #Introduction
-
-Load required libraries and load the English language datasets.
-```{r message=FALSE}
+This report summarizes exploratory data analysis and project goals to date for the Coursera/JHU NLP Data Science Capstone.  
+```{r message=FALSE,cache=FALSE}
 library(tm)
 library(quanteda)
 library(RWeka)
-enDir <- './final/en_US'
-enDir <- './finalsub/en_US'
-ec <- VCorpus(DirSource(enDir))#english corpus
+library(wordcloud)
+enDir <- './final/en_US' #full dataset
+enDir <- './finalsub/en_US' #subset dataset, see appendix for BASH
 ```
 #Preprocessing and Cleaning  
-Clean and tokenize the dataset using MC_tokenizer from tm package
-```{r message=FALSE}
+The data was subset (every 100th entry) for initial processing after finding the full data sets are unwieldy.  See appendix for BASH commands to process the data.
+To make the data easier to work with, the English Language datasets are tokenized (separated into discrete words) using MC_tokenizer from the tm package, which also applies some cleaning functions such as conversion to lowercase and punctuation removal.   
+```{r message=FALSE,cache=FALSE}
+ec <- VCorpus(DirSource(enDir))#english corpus
 ect <- tm_map(ec,MC_tokenizer)#english corpus tokenized
-```
+```  
 #Findings  
-The corpus is converted to a Term Document Matrix to show frequency of discrete words contained in the Corpus.
-```{r message=FALSE,results='hide'}
+The corpus is converted to a Term Document Matrix to show frequency of discrete words contained in the Corpus.  Below are the 20 most frequent entries.  
+```{r message=FALSE,results='hide',cache=FALSE}
 dtm <- tm_map(ect, PlainTextDocument)#prevent error on TermDocumentMatrix
 dtm<- TermDocumentMatrix(dtm)
 wordCount <- dtm$nrow
-```
-Found `r wordCount` distinct words  
-A histogram can be constructed from the term document matrix to show the frequency of word counts
+wordFrequency <- rowSums(as.matrix(dtm))
+```  
+```{r}
+head(as.matrix(dtm)[order(wordFrequency,decreasing=TRUE),],n=20)
+```  
+There are `r wordCount` distinct words found in the dataset.  
+A histogram can be constructed from the term document matrix to show the frequency of word counts.  The frequency of each word is computed across all datasets, and then logarithmically compressed to aid visualization.  
 ```{r message=FALSE}
-hist(round(rowMeans(as.matrix(dtm))))
-```
+logWordFrequency <- log10(wordFrequency)
+hist(logWordFrequency,breaks=10)
+```  
+  
+For visualization purposes, we will generate a word cloud of the 100 most common words in the dataset.  
+```{r message=FALSE}
+freq100 <- head(wordFrequency[order(wordFrequency,decreasing=TRUE)],n=100)
+wordcloud(names(freq100),freq100)
+```    
   
 #Prediction  
-After cleaning and processing the data to create a usable database of n-grams, a Shiny App will be constructed to reference user input against the n-gram database, using the most frequently occuring matching n-gram to predict the user's input.
+After cleaning and processing the data, a database of n-grams will be constructed.  This will contain frequency information for common sequences (bi-gram being a two word sequence such as 'oh fudge', tri-gram a three word sequence such etc..). A Shiny App will be constructed to reference user input against the n-gram database, using the most frequently occuring matching n-gram to predict the user's input.  
+
+#Appendix
+BASH commands for Subsetting datasets for evaluation:  
+awk 'NR%100==1' en_US.news.txt > en_US.news_sub.txt  
+awk 'NR%100==1' en_US.blogs.txt > en_US.blogs_sub.txt  
+awk 'NR%100==1' en_US.twitter.txt > en_US.twitter_sub.txt  
+

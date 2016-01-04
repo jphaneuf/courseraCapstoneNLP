@@ -1,0 +1,42 @@
+---
+title: "Coursera/JHU NLP Milestone Report"
+output: html_document
+date: "December 16, 2015"
+---
+```{r message=FALSE,cache=FALSE}
+library(tm)
+library(quanteda)
+library(RWeka)
+library(wordcloud)
+#library(qdap)
+source('./nlpCustomFunctions.R')
+enDir <- './final/en_US' #full dataset
+enDir <- './finalsub/en_US' #subset dataset, see appendix for BASH
+```
+
+```{r message=FALSE,cache=FALSE}
+#ect <- tm_map(ec,MC_tokenizer)#english corpus tokenized
+#ec <- tm_map(ec,cleanupFun)
+#ec <- tm_map(ec,clean_text)
+
+```  
+```{r}
+ec <- VCorpus(DirSource(enDir))#english corpus
+#ec <- tm_map(ec,clean_text)
+ec <- cleanupFun(ec)
+NGramTokenizerC <- function(x) NGramTokenizer(x,Weka_control(min=3,max=3))
+#ec <- tm_map(ec,stripWhitespace)
+grams <- tm_map(ec,NGramTokenizerC)
+grams <- tm_map(grams,function(x) gsub(' ','_',x))#term document separates on whitespace
+grams <- tm_map(grams,PlainTextDocument)
+dtm <- TermDocumentMatrix(grams)
+
+wordCount <- dtm$nrow
+wordFrequency <- rowSums(as.matrix(dtm))
+head(as.matrix(dtm)[order(wordFrequency,decreasing=TRUE),],n=20)
+write.table(rownames(as.matrix(dtm)[order(wordFrequency,decreasing=TRUE),]),'ngrams.txt')
+```
+
+
+ 
+

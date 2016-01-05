@@ -8,6 +8,7 @@ library(tm)
 library(quanteda)
 library(RWeka)
 library(wordcloud)
+library(stringr)
 #library(qdap)
 source('./nlpCustomFunctions.R')
 enDir <- './final/en_US' #full dataset
@@ -24,19 +25,33 @@ enDir <- './finalsub/en_US' #subset dataset, see appendix for BASH
 ec <- VCorpus(DirSource(enDir))#english corpus
 #ec <- tm_map(ec,clean_text)
 ec <- cleanupFun(ec)
-NGramTokenizerC <- function(x) NGramTokenizer(x,Weka_control(min=3,max=3))
+NGramTokenizerC <- function(x) NGramTokenizer(x,Weka_control(min=1,max=4))
 #ec <- tm_map(ec,stripWhitespace)
 grams <- tm_map(ec,NGramTokenizerC)
 grams <- tm_map(grams,function(x) gsub(' ','_',x))#term document separates on whitespace
 grams <- tm_map(grams,PlainTextDocument)
-dtm <- TermDocumentMatrix(grams)
-
-wordCount <- dtm$nrow
-wordFrequency <- rowSums(as.matrix(dtm))
-head(as.matrix(dtm)[order(wordFrequency,decreasing=TRUE),],n=20)
-write.table(rownames(as.matrix(dtm)[order(wordFrequency,decreasing=TRUE),]),'ngrams.txt')
+#dtm <- TermDocumentMatrix(grams)
+#write.csv(as.matrix(dtm)[order(wordFrequency,decreasing=TRUE),],'ngrams.csv')
+dtmm <- read.csv('ngrams.csv')
+names(dtmm) <- c('gram','news','blogs','twitter')
+dtmm$totalFrequency <- rowSums(subset(dtmm,select=-c(gram)))
+howManyGrams <- function(x) str_count(x,'_')+1 # find out how many grams in dataSet
+dtmm$n <- sapply(dtmm$gram,howManyGrams)
 ```
+```{r}
+ngrams <- rownames(as.matrix(dtm)[order(wordFrequency,decreasing=TRUE),])
+predict <- function(userInput){
+  #clean
+  #add underscores
+  #search
 
+  #return userInput if no match
+}
+as.matrix(dtm)
+dtmm <- read.csv('ngrams.csv')
+#convert to matrix
+#sort
+```
 
  
 

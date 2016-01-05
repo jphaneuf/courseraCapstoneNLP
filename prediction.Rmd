@@ -15,31 +15,38 @@ enDir <- './final/en_US' #full dataset
 enDir <- './finalsub/en_US' #subset dataset, see appendix for BASH
 ```
 
-```{r message=FALSE,cache=FALSE}
-#ect <- tm_map(ec,MC_tokenizer)#english corpus tokenized
-#ec <- tm_map(ec,cleanupFun)
-#ec <- tm_map(ec,clean_text)
-
-```  
 ```{r}
 ec <- VCorpus(DirSource(enDir))#english corpus
-#ec <- tm_map(ec,clean_text)
 ec <- cleanupFun(ec)
-NGramTokenizerC <- function(x) NGramTokenizer(x,Weka_control(min=1,max=4))
-#ec <- tm_map(ec,stripWhitespace)
-grams <- tm_map(ec,NGramTokenizerC)
-grams <- tm_map(grams,function(x) gsub(' ','_',x))#term document separates on whitespace
-grams <- tm_map(grams,PlainTextDocument)
-#dtm <- TermDocumentMatrix(grams)
-#write.csv(as.matrix(dtm)[order(wordFrequency,decreasing=TRUE),],'ngrams.csv')
-dtmm <- read.csv('ngrams.csv')
-names(dtmm) <- c('gram','news','blogs','twitter')
-dtmm$totalFrequency <- rowSums(subset(dtmm,select=-c(gram)))
-howManyGrams <- function(x) str_count(x,'_')+1 # find out how many grams in dataSet
-dtmm$n <- sapply(dtmm$gram,howManyGrams)
+options(mc.cores=1)
 ```
+
 ```{r}
-ngrams <- rownames(as.matrix(dtm)[order(wordFrequency,decreasing=TRUE),])
+createDTMxGrams <- function(n){
+  #Create DTM on corpus for n-gram
+  NGramTokenizerC <- function(x) NGramTokenizer(x,Weka_control(min=n,max=n)) 
+  grams <- tm_map(ec,NGramTokenizerC)
+  grams <- tm_map(grams,function(x) gsub(' ','_',x))#term document separates on whitespace
+  grams <- tm_map(grams,PlainTextDocument)
+  dtm <- TermDocumentMatrix(grams)
+  dtm <- as.matrix(dtm)
+  dtm <- cbind(dtm,rowSums(dtm))
+  dtm <- cbind(dtm,rep(n,nrow(dtm)))
+  colnames(dtm) <- c('news','blogs','twitter','total','n')
+  dtm <- dtm[order(dtm[,'total'],decreasing=TRUE),]
+  dtm
+}
+unigrams <- createDTMxGrams(1)
+write.csv(unigrams,file='unigrams.csv')
+bigrams <- createDTMxGrams(2)
+write.csv(bigrams,file='bigrams.csv')
+trigrams <- createDTMxGrams(3)
+write.csv(trigrams,file='trigrams.csv')
+quadgrams <- createDTMxGrams(4)
+write.csv(quadgrams,file='quadrams.csv')
+```
+
+```{r}
 predict <- function(userInput){
   #clean
   #add underscores
@@ -47,8 +54,6 @@ predict <- function(userInput){
 
   #return userInput if no match
 }
-as.matrix(dtm)
-dtmm <- read.csv('ngrams.csv')
 #convert to matrix
 #sort
 ```

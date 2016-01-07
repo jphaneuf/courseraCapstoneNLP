@@ -59,16 +59,32 @@ quadgrams <- as.matrix(read.csv('quadgrams.csv',row.names=1))
 predict <- function(userInput){
   userInput <- tolower(userInput)
   userInput <- gsub(' ','_',userInput)
+  userInput <- paste0('^',userInput)#look at beginning of line
   #search
   #index <- head(grep(userInput,rownames(b)),n=1)
-  index <- head(grep(userInput,rownames(quadgrams)),n=1)
-  if(length(index)){
-    return(rownames(quadgrams)[index])
-  }else{
-    return(userInput)
-  }
+  qi <- head(grep(userInput,rownames(quadgrams)),n=1)
+  ti<- head(grep(userInput,rownames(trigrams)),n=1)
+  bi<- head(grep(userInput,rownames(bigrams)),n=1)
+  if(length(bi)) bf<-bigrams[bi,'total'] else bf <- 0#frequency
+  if(length(ti)) tf<-trigrams[ti,'total'] else tf <- 0#frequency
+  if(length(qi)) qf<-quadgrams[qi,'total'] else qf <- 0#frequency
+  print(bf)
+  if(bf>0) print(rownames(bigrams)[bi])
+  print(tf)
+  if(tf>0) print(rownames(trigrams)[ti])
+  print(qf)
+  if(qf>0) print(rownames(quadgrams)[qi])
+  
+  #if(length(qi)) return(rownames(quadgrams)[qi]) else return(qi)
 }
 ```
+getEntries <- function(x){
+  x <- tolower(x)
+  x<- gsub(' ','_',x)
+  x <- paste0('^',x)
+  rownames(quadgrams)[grep(x,rownames(quadgrams))]
+}
+
 
  
 

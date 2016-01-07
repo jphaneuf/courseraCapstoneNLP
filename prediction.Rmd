@@ -43,19 +43,31 @@ write.csv(bigrams,file='bigrams.csv')
 trigrams <- createDTMxGrams(3)
 write.csv(trigrams,file='trigrams.csv')
 quadgrams <- createDTMxGrams(4)
-write.csv(quadgrams,file='quadrams.csv')
+write.csv(quadgrams,file='quadgrams.csv')
+```
+```{r}
+unigrams <- as.matrix(read.csv('unigrams.csv',row.names=1))
+bigrams <- as.matrix(read.csv('bigrams.csv',row.names=1))
+trigrams <- as.matrix(read.csv('trigrams.csv',row.names=1))
+quadgrams <- as.matrix(read.csv('quadgrams.csv',row.names=1))
+```
+```{r}
+
 ```
 
 ```{r}
 predict <- function(userInput){
-  #clean
-  #add underscores
+  userInput <- tolower(userInput)
+  userInput <- gsub(' ','_',userInput)
   #search
-
-  #return userInput if no match
+  #index <- head(grep(userInput,rownames(b)),n=1)
+  index <- head(grep(userInput,rownames(quadgrams)),n=1)
+  if(length(index)){
+    return(rownames(quadgrams)[index])
+  }else{
+    return(userInput)
+  }
 }
-#convert to matrix
-#sort
 ```
 
  

@@ -1,17 +1,11 @@
 library(shiny)
 shinyUI(fluidPage(
-  titlePanel("Hello Shiny!"),
+  titlePanel("Text Prediction"),
   sidebarLayout(
     sidebarPanel(
-      sliderInput("bins",
-                  "Number of bins:",
-                  min = 1,
-                  max = 50,
-                  value = 30),
-      textInput('inputText','label',value='')
+      textInput('inputText','Input',value='')
     ),
     mainPanel(
-      plotOutput("distPlot"),
       textOutput("predictedText")
     )
   )

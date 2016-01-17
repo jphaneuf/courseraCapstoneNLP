@@ -1,7 +1,7 @@
 library(shiny)
-bigrams <- as.matrix(read.csv('bigrams.csv',row.names=1))
-trigrams <- as.matrix(read.csv('trigrams.csv',row.names=1))
-quadgrams <- as.matrix(read.csv('quadgrams.csv',row.names=1))
+bigrams <- as.matrix(read.csv('./bigrams.csv',row.names=1))
+trigrams <- as.matrix(read.csv('./trigrams.csv',row.names=1))
+quadgrams <- as.matrix(read.csv('./quadgrams.csv',row.names=1))
 findNgramInData <- function(ngram,dtm) head(grep(ngram,rownames(dtm),value=TRUE),n=1)
 
 predict <- function(inputString,nGramIn=3,nGramOut=4){

@@ -13,7 +13,7 @@ predict <- function(inputString,nGramIn=3,nGramOut=4){
      '3'=findNgramInData(userInput,trigrams),
      '4'=findNgramInData(userInput,quadgrams))
   prediction <- paste(unlist(strsplit(prediction,split='_'))[-(1:nGramIn)],collapse=" ")
-  prediction <- paste(inputString,prediction)
+  #prediction <- paste(inputString,prediction)
   return(prediction)
 }
 
@@ -23,11 +23,8 @@ shinyServer(function(input, output) {
     nTokens <- length(unlist(strsplit(input$inputText,split=' ')))
     #assume predicting a quadgram with a trigram input is the most accurate, and work backwords from there
     for (i in min(nTokens,3):1){
-      for(j in 4:2){
-        result <- predict(input$inputText,nGramIn=i,nGramOut=j) 
+        result <- predict(input$inputText,nGramIn=i,nGramOut=i+1) 
         if(length(result)) return(result)
-        
-      }
     }
   })
 })

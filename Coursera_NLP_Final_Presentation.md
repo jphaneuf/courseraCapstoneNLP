@@ -26,4 +26,4 @@ The prediction algorithm is wrapped up in a Shiny App for convenient demonstrati
 Shiny App Usage
 ========================================================
 **Link**
- The App consists simply of a text input box, where you can input text, and an output text box with a prediction of the next word.  Enjoy!
+ The App consists simply of a text input box, where you can input text, and an output text box with a prediction of the next word.  Note that in this configuration, the App attepms to predict the next word, but will not attempt to fill in an incomplete input word.  Enjoy!
